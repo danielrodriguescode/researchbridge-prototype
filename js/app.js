@@ -3,7 +3,7 @@
 ============================================================ */
 
 /* ---------------- STATE ---------------- */
-const S = { screen: 'home', abstract: '', audience: null, objective: null };
+const S = { screen: 'home', example: null, abstract: '', audience: null, objective: null };
 
 /* sessionStorage persistence (survives a mid-test refresh) */
 function saveState() { try { sessionStorage.setItem('rb', JSON.stringify(S)); } catch(e){} }
@@ -57,47 +57,43 @@ function onKeyActivate(e, fn) {
 }
 
 /* ============================================================
-   DEMOS
+   EXAMPLE RESEARCH SUMMARIES (Step 1)
 ============================================================ */
+// Guided example: pre-fills the summary AND the audience/objective, then opens Step 1.
 function loadDemo(id) {
   const d = DEMOS[id];
-  S.abstract = d.abstract; S.audience = d.audience; S.objective = d.objective;
-  document.getElementById('ta').value = d.abstract;
-  onTaInput();
+  S.example = id; S.abstract = d.abstract; S.audience = d.audience; S.objective = d.objective;
+  reflectExample(id);
   selAud(d.audience, false);
   buildObjs(d.audience);
   setTimeout(() => selObj(d.objective), 40);
   go('input');
 }
 
-function fillDemo(id) {
+// Constrained Step 1: choosing an example sets only the summary; the user picks audience/objective.
+function pickExample(id) {
   const d = DEMOS[id];
-  document.getElementById('ta').value = d.abstract;
-  S.abstract = d.abstract;
-  onTaInput();
-  S.audience = d.audience; S.objective = d.objective;
-  selAud(d.audience, false);
-  buildObjs(d.audience);
-  setTimeout(() => selObj(d.objective), 40);
+  S.example = id; S.abstract = d.abstract;
+  reflectExample(id);
+  saveState();
+}
+
+// Highlight the chosen example card, show its abstract, enable Continue.
+function reflectExample(id) {
+  document.querySelectorAll('.ex-card').forEach(c => { c.classList.remove('sel'); c.setAttribute('aria-pressed','false'); });
+  const c = document.getElementById('ex-' + id);
+  if (c) { c.classList.add('sel'); c.setAttribute('aria-pressed','true'); }
+  const prev = document.getElementById('ex-preview');
+  const abs = document.getElementById('ex-abstract');
+  if (DEMOS[id] && prev && abs) { abs.textContent = DEMOS[id].abstract; prev.style.display = ''; }
+  const btn = document.getElementById('btn-in-next');
+  if (btn) btn.disabled = !S.abstract;
 }
 
 function isDemoAbstract(text) {
   const t = (text||'').trim();
   return Object.values(DEMOS).some(d => d.abstract.trim() === t);
 }
-
-/* ============================================================
-   TEXTAREA
-============================================================ */
-function onTaInput() {
-  const v = document.getElementById('ta').value.trim();
-  S.abstract = v;
-  const w = v ? v.split(/\s+/).length : 0;
-  document.getElementById('wc').textContent = w + (w===1?' word':' words');
-  document.getElementById('btn-in-next').disabled = w < 5;
-  saveState();
-}
-function clearTa() { document.getElementById('ta').value = ''; onTaInput(); }
 
 /* ============================================================
    AUDIENCE
@@ -344,6 +340,7 @@ function escapeXml(s){ return (s||'').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&
    EXPORT
 ============================================================ */
 function buildExport(r) {
+  LAST_R = r;
   const secs = [];
   // Use the real message labels rather than hardcoded headers
   if (r.msg[1]) secs.push(`<div class="brief-sec"><h4>${r.msg[1].l}</h4><p>${r.msg[1].t}</p></div>`);
@@ -375,34 +372,117 @@ function toggleRp(id) {
 }
 
 /* ============================================================
-   EXPORT ACTIONS (simulated) — explicit event param (no global)
+   EXPORT ACTIONS (real, dependency-free)
 ============================================================ */
-function simDl(type, e) {
-  const b = e.currentTarget;
-  const orig = b.textContent;
-  b.textContent = '✓ Download started';
-  b.disabled = true;
-  setTimeout(() => { b.textContent = orig; b.disabled = false; }, 2200);
+let LAST_R = null; // most recently rendered recommendation set
+
+function flash(btn, msg, ms = 2200) {
+  const orig = btn.textContent;
+  btn.textContent = msg;
+  btn.disabled = true;
+  setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, ms);
 }
-function simCopy(e) {
-  const b = e.currentTarget;
-  b.textContent = '✓ Copied to clipboard!';
-  setTimeout(() => { b.textContent = '📋 Copy text'; }, 2200);
+
+function exportTitle() {
+  const t = S.example && DEMOS[S.example] ? DEMOS[S.example].title : 'Research summary';
+  return t;
 }
-function simShare(e) {
+
+// Plain-text version of the brief (for clipboard + .txt)
+function buildExportText(r) {
+  if (!r) return '';
+  const L = [];
+  L.push((EXP_LABELS[S.audience] || 'RESEARCH SUMMARY') + ' — ' + r.al + ' · ' + r.ol);
+  L.push('Topic: ' + exportTitle());
+  L.push('');
+  L.push(r.msg[0].t);
+  L.push('');
+  if (r.msg[1]) { L.push(r.msg[1].l.toUpperCase()); L.push(r.msg[1].t); L.push(''); }
+  L.push('SUPPORTING DATA');
+  L.push(r.data.map(d => `• ${d.n} — ${(d.l||'').replace(/\n/g,' ')}`).join('\n'));
+  L.push('');
+  if (r.msg[2]) { L.push(r.msg[2].l.toUpperCase()); L.push(r.msg[2].t); L.push(''); }
+  if (r.prereq && r.prereq.length) { L.push('WHAT THEY NEED TO KNOW FIRST'); r.prereq.forEach(p => L.push('• ' + p)); L.push(''); }
+  L.push('— Prepared with ResearchBridge');
+  return L.join('\n');
+}
+
+// Markdown slide outline
+function buildSlideOutline(r) {
+  if (!r) return '';
+  const L = [];
+  L.push('# ' + exportTitle());
+  L.push('_For ' + (AUD_LABELS[S.audience] || 'your audience') + ' · ' + r.ol + '_');
+  L.push('');
+  L.push('## Key message');
+  L.push('- ' + r.msg[0].t);
+  if (r.prereq && r.prereq.length) { L.push(''); L.push('## What they need to know first'); r.prereq.forEach(p => L.push('- ' + p)); }
+  L.push(''); L.push('## Data to highlight');
+  r.data.forEach(d => L.push(`- **${d.n}** — ${(d.l||'').replace(/\n/g,' ')}`));
+  if (r.msg[1]) { L.push(''); L.push('## ' + r.msg[1].l); L.push('- ' + r.msg[1].t); }
+  if (r.msg[2]) { L.push(''); L.push('## ' + r.msg[2].l); L.push('- ' + r.msg[2].t); }
+  if (r.qa && r.qa.length) { L.push(''); L.push('## Likely questions'); r.qa.forEach(x => L.push(`- **${x.q}** ${x.a}`)); }
+  L.push(''); L.push('---'); L.push('_Prepared with ResearchBridge_');
+  return L.join('\n');
+}
+
+function downloadFile(name, text, mime) {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+function slug() { return (exportTitle() || 'researchbridge').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,''); }
+
+// Download as PDF → browser print dialog (Save as PDF); print CSS shows only the brief.
+function exportPdf(e) {
   const b = e.currentTarget;
-  b.textContent = '✓ Link: researchbridge.app/share/demo-001';
-  setTimeout(() => { b.textContent = '🔗 Share link'; }, 3000);
+  flash(b, '🖨 Opening print…', 1200);
+  setTimeout(() => window.print(), 250);
+}
+
+function exportSlides(e) {
+  downloadFile(slug() + '-slide-outline.md', buildSlideOutline(LAST_R), 'text/markdown');
+  flash(e.currentTarget, '✓ Outline downloaded');
+}
+
+function copyText(e) {
+  const text = buildExportText(LAST_R);
+  const b = e.currentTarget;
+  const ok = () => flash(b, '✓ Copied to clipboard');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(ok).catch(() => { legacyCopy(text); ok(); });
+  } else { legacyCopy(text); ok(); }
+}
+
+function shareLink(e) {
+  const link = 'https://researchbridge-prototype.vercel.app/?example=' + (S.example || '') + '&audience=' + (S.audience || '') + '&objective=' + (S.objective || '');
+  const b = e.currentTarget;
+  const ok = () => flash(b, '✓ Share link copied');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(link).then(ok).catch(() => { legacyCopy(link); ok(); });
+  } else { legacyCopy(link); ok(); }
+}
+
+function legacyCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); } catch (err) {}
+  ta.remove();
 }
 
 /* ============================================================
    RESET
 ============================================================ */
 function reset() {
-  S.abstract = ''; S.audience = null; S.objective = null;
-  document.getElementById('ta').value = '';
-  onTaInput();
-  document.querySelectorAll('.aud-card').forEach(c => { c.classList.remove('sel'); c.setAttribute('aria-pressed','false'); });
+  S.example = null; S.abstract = ''; S.audience = null; S.objective = null;
+  document.querySelectorAll('.ex-card, .aud-card').forEach(c => { c.classList.remove('sel'); c.setAttribute('aria-pressed','false'); });
+  const prev = document.getElementById('ex-preview'); if (prev) prev.style.display = 'none';
+  const btn = document.getElementById('btn-in-next'); if (btn) btn.disabled = true;
   saveState();
   go('home');
 }
@@ -416,5 +496,5 @@ function fmt(s) {
    INIT
 ============================================================ */
 loadState();
-if (S.abstract) { document.getElementById('ta').value = S.abstract; onTaInput(); }
+if (S.example && DEMOS[S.example]) { reflectExample(S.example); }
 go('home');

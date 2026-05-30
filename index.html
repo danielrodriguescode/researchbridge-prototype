@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ResearchBridge — Communicate your research with confidence</title>
+  <link rel="icon" type="image/png" href="logo-mark.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
@@ -13,8 +14,8 @@
 
 <!-- NAV -->
 <nav class="nav">
-  <div class="nav-logo" role="button" tabindex="0" onclick="go('home')" onkeydown="onKeyActivate(event, () => go('home'))">
-    <div class="nav-dot"></div>ResearchBridge
+  <div class="nav-logo" role="button" tabindex="0" onclick="go('home')" onkeydown="onKeyActivate(event, () => go('home'))" aria-label="ResearchBridge home">
+    <img src="logo-mark.png" class="nav-mark" alt=""><span class="nav-word">ResearchBridge</span>
   </div>
   <div class="nav-spacer"></div>
   <div class="nav-steps" id="nav-steps">
@@ -43,26 +44,25 @@
   <div id="screen-home" class="screen active">
     <div class="home-hero">
       <div>
-        <div class="hero-tag">HI.PRESENT · PhD prototype · HEADS/FMUP</div>
+        <div class="hero-tag">Health research communication</div>
         <h1 class="hero-h1">
-          Paste your findings.<br>
-          Choose your <em>audience</em>.<br>
-          Communicate.
+          Make your research<br>
+          reach the right <em>audience</em>.
         </h1>
         <p class="hero-sub">
-          ResearchBridge helps PhD researchers in health sciences communicate their findings
+          ResearchBridge helps researchers in health sciences communicate their findings
           to policymakers, clinical teams, funders, patients, and the public — without losing the science.
         </p>
         <div class="hero-cta">
           <button class="btn btn-p btn-lg" onclick="go('input')">Start now →</button>
-          <button class="btn btn-g" onclick="loadDemo('s1')">Try demo scenario</button>
+          <button class="btn btn-g" onclick="loadDemo('s1')">Try a guided example</button>
         </div>
       </div>
       <div class="hero-card">
         <div class="hc-label">How it works</div>
         <div class="hstep">
           <div class="hstep-n">1</div>
-          <div><h4>Paste your abstract</h4><p>Any research summary, abstract, or key findings</p></div>
+          <div><h4>Choose a research summary</h4><p>Start from one of the example studies</p></div>
         </div>
         <div class="hstep">
           <div class="hstep-n">2</div>
@@ -80,9 +80,9 @@
     </div>
     <div class="home-sc">
       <div class="home-sc-inner">
-        <div class="sc-tag">Pre-loaded scenarios</div>
+        <div class="sc-tag">Guided examples</div>
         <h2 class="sc-h2">See ResearchBridge in action</h2>
-        <p class="sc-sub">Two real research communication challenges from the HEADS PhD programme. Click to load a scenario.</p>
+        <p class="sc-sub">Two common research-communication challenges. Click to load a worked example end to end.</p>
         <div class="sc-grid">
           <div class="sc-card" role="button" tabindex="0" onclick="loadDemo('s1')" onkeydown="onKeyActivate(event, () => loadDemo('s1'))">
             <div class="sc-num">Scenario 1</div>
@@ -101,26 +101,27 @@
     </div>
   </div>
 
-  <!-- STEP 1: INPUT -->
+  <!-- STEP 1: RESEARCH SUMMARY -->
   <div id="screen-input" class="screen">
     <div class="step-wrap">
-      <div class="step-lbl">Step 1 of 4 — Input</div>
-      <h2 class="step-h2">What are you communicating?</h2>
-      <p class="step-sub">Paste your abstract, research summary, or key findings below.</p>
-      <div class="demo-row">
-        <span>Load a demo:</span>
-        <button class="dbtn" onclick="fillDemo('s1')">📋 Scenario 1 — Policy brief</button>
-        <button class="dbtn" onclick="fillDemo('s2')">🏥 Scenario 2 — Clinical</button>
+      <div class="step-lbl">Step 1 of 4 — Research summary</div>
+      <h2 class="step-h2">Choose a research summary</h2>
+      <p class="step-sub">Select one of the example studies to work with. In the next steps you decide who it is for and what you want to achieve.</p>
+      <div class="ex-grid">
+        <div class="ex-card" id="ex-s1" role="button" tabindex="0" aria-pressed="false" onclick="pickExample('s1')" onkeydown="onKeyActivate(event, () => pickExample('s1'))">
+          <div class="ex-tag">Example 1</div>
+          <h4>Colorectal cancer risk model</h4>
+          <p>An AI model that predicts 10-year colorectal cancer risk from routine health records across Portuguese hospitals.</p>
+        </div>
+        <div class="ex-card" id="ex-s2" role="button" tabindex="0" aria-pressed="false" onclick="pickExample('s2')" onkeydown="onKeyActivate(event, () => pickExample('s2'))">
+          <div class="ex-tag">Example 2</div>
+          <h4>Cardiac event early-warning model</h4>
+          <p>A real-time model that predicts in-hospital cardiac events four hours in advance in a coronary care unit.</p>
+        </div>
       </div>
-      <textarea id="ta" class="ta" placeholder="Paste your abstract or research findings here…
-
-Example: 'We conducted a study of X in N participants. Our main finding was…'" oninput="onTaInput()"></textarea>
-      <div class="ta-meta">
-        <span id="wc">0 words</span>
-        <button class="btn btn-g" style="font-size:12px;padding:3px 8px;" onclick="clearTa()">Clear</button>
-      </div>
-      <div class="notice">
-        💡 <strong>Tip:</strong> The more specific your text, the more targeted the recommendations. Paste an abstract, a results section, or even bullet points — ResearchBridge will flag the jargon and numbers it finds in <em>your</em> text.
+      <div class="ex-preview" id="ex-preview" style="display:none;">
+        <div class="ex-preview-lbl">Selected research summary</div>
+        <p id="ex-abstract"></p>
       </div>
     </div>
     <div class="step-nav">
@@ -261,10 +262,10 @@ Example: 'We conducted a study of X in N participants. Our main finding was…'"
       <p class="step-sub">Preview your output below and download in your preferred format.</p>
       <div class="exp-preview" id="exp-preview"></div>
       <div class="exp-actions">
-        <button class="btn btn-p" onclick="simDl('PDF', event)">📄 Download as PDF</button>
-        <button class="btn btn-s" onclick="simDl('slides', event)">🖥 Export slide outline</button>
-        <button class="btn btn-s" onclick="simCopy(event)">📋 Copy text</button>
-        <button class="btn btn-g" onclick="simShare(event)">🔗 Share link</button>
+        <button class="btn btn-p" onclick="exportPdf(event)">📄 Download as PDF</button>
+        <button class="btn btn-s" onclick="exportSlides(event)">🖥 Download slide outline</button>
+        <button class="btn btn-s" onclick="copyText(event)">📋 Copy text</button>
+        <button class="btn btn-g" onclick="shareLink(event)">🔗 Copy share link</button>
       </div>
       <div class="divider"></div>
       <div style="display:flex;gap:14px;align-items:center;">

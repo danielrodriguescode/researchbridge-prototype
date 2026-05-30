@@ -9,10 +9,14 @@
 const DEMOS = {
   s1: {
     audience: 'policymaker', objective: 'motivate',
+    title: 'Colorectal cancer risk model',
+    blurb: 'An AI model that predicts 10-year colorectal cancer risk from routine health records across Portuguese hospitals.',
     abstract: `We developed a machine learning model to predict 10-year colorectal cancer risk in adults aged 40–65 using electronic health records from 12,847 patients across three Portuguese hospital centres (2015–2022). The model achieved an AUC of 0.83 (95% CI: 0.79–0.87) and identified family history, BMI >30, and smoking status as the three strongest predictors. Compared to current national screening guidelines, our model would identify an additional 23% of high-risk individuals while reducing unnecessary colonoscopies by 31%. Implementation as a primary care decision-support tool could prevent an estimated 340 colorectal cancer deaths annually in Portugal.`
   },
   s2: {
     audience: 'clinical', objective: 'present-tool',
+    title: 'Cardiac event early-warning model',
+    blurb: 'A real-time model that predicts in-hospital cardiac events four hours in advance in a coronary care unit.',
     abstract: `This study presents a real-time predictive model for in-hospital cardiac events in patients admitted to the Coronary Care Unit. Using a deep learning architecture trained on 6-hour vital sign sequences from 2,341 admissions (2019–2023), the model predicted adverse events 4 hours in advance with sensitivity of 79% and specificity of 88%. Integration into the bedside monitoring system showed a 34% reduction in false alarm fatigue among nursing staff. The model requires approximately 2 GB of GPU memory and achieves inference latency under 200 ms per patient.`
   }
 };
