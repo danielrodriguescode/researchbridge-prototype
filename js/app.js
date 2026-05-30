@@ -179,8 +179,8 @@ function showRecs() {
 }
 
 function getRecs() {
-  const ar = RECS[S.audience];
-  if (ar && ar[S.objective]) return ar[S.objective];
+  const ex = RECS[S.example];
+  if (ex && ex[S.audience] && ex[S.audience][S.objective]) return ex[S.audience][S.objective];
   return fallbackRecs();
 }
 
@@ -236,11 +236,11 @@ function renderRecs() {
     if (an.numbers.length) { dataList = an.numbers; dataNote = 'Detected directly in your abstract — verify and lead with the strongest.'; }
   }
 
-  // Message + prerequisite concepts + diagram
+  // Key message (lead → support → ask) as a content-filled visual + prerequisites
   document.getElementById('rp1-body').innerHTML =
-    r.msg.map(m => `<div class="msg-item"><div class="msg-lbl">${m.l}</div><div class="msg-txt">${m.t}</div></div>`).join('')
-    + renderPrereq(r.prereq)
-    + `<div class="diagram-wrap">${buildDiagram(r)}</div>`;
+    `<p class="rp-note">Your message in three parts — lead with the impact, support it with evidence, then make the ask.</p>`
+    + `<div class="diagram-wrap">${buildDiagram(r)}</div>`
+    + renderPrereq(r.prereq);
 
   // Data
   document.getElementById('rp2-body').innerHTML =
@@ -305,59 +305,44 @@ function renderQA(qa) {
     + qa.map(x => `<div class="qa-item"><div class="qa-q">${x.q}</div><div class="qa-a">${x.a}</div></div>`).join('');
 }
 
-/* ---------- SVG key-message diagram (survey R3/R4/R9) ---------- */
+/* ---------- Key-message diagram (survey R3/R4/R9) ----------
+   Content-filled stacked tiers (lead → support → ask). HTML so the
+   actual message text wraps and prints cleanly in the brief. */
 function buildDiagram(r) {
-  const labels = r.msg.slice(0,3).map(m => m.l);
-  const tiers = [
-    { w:200, txt: labels[0] || 'Lead' },
-    { w:320, txt: labels[1] || 'Support' },
-    { w:440, txt: labels[2] || 'Ask' }
-  ];
-  const W = 480, rowH = 46, gap = 10, cx = W/2;
-  const H = tiers.length * (rowH + gap) + 28;
-  let y = 14;
-  const blocks = tiers.map((t,i) => {
-    const x = cx - t.w/2;
-    const fill = i === 0 ? '#E86C2F' : (i === 1 ? '#2d4070' : '#1B2A4A');
-    const b = `<g>
-      <rect x="${x}" y="${y}" width="${t.w}" height="${rowH}" rx="6" fill="${fill}"></rect>
-      <text x="${cx}" y="${y + rowH/2 + 4}" text-anchor="middle" font-family="DM Sans, sans-serif" font-size="13" font-weight="600" fill="#ffffff">${escapeXml(t.txt)}</text>
-    </g>`;
-    const arrow = i < tiers.length-1
-      ? `<path d="M${cx} ${y+rowH} L${cx} ${y+rowH+gap}" stroke="#D8D4CE" stroke-width="2" marker-end="url(#arr)"></path>` : '';
-    y += rowH + gap;
-    return b + arrow;
-  }).join('');
-  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Key message structure diagram">
-    <defs><marker id="arr" viewBox="0 0 8 8" refX="4" refY="4" markerWidth="6" markerHeight="6" orient="auto">
-      <path d="M0 0 L8 4 L0 8 z" fill="#D8D4CE"></path></marker></defs>
-    ${blocks}
-  </svg>`;
+  const defs = ['Lead with', 'Support with', 'The ask'];
+  const cls = ['kp-lead', 'kp-support', 'kp-ask'];
+  const widths = [82, 91, 100];
+  const tiers = (r.msg || []).slice(0, 3).map((m, i) => ({
+    cap: m.l || defs[i], txt: m.t, cls: cls[i], w: widths[i]
+  })).filter(t => t.txt);
+  return `<div class="keypyr">` + tiers.map(t =>
+    `<div class="kp-tier ${t.cls}" style="width:${t.w}%">
+       <div class="kp-cap">${esc(t.cap)}</div>
+       <div class="kp-txt">${esc(t.txt)}</div>
+     </div>`).join('') + `</div>`;
 }
-function escapeXml(s){ return (s||'').replace(/[<>&]/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;'}[c])); }
+function esc(s) { return (s || '').replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c])); }
 
 /* ============================================================
    EXPORT
 ============================================================ */
 function buildExport(r) {
   LAST_R = r;
-  const secs = [];
-  // Use the real message labels rather than hardcoded headers
-  if (r.msg[1]) secs.push(`<div class="brief-sec"><h4>${r.msg[1].l}</h4><p>${r.msg[1].t}</p></div>`);
-  secs.push(`<div class="brief-sec"><h4>Supporting data</h4>
-      <p>${r.data.map(d => `<strong>${d.n}</strong> — ${(d.l||'').replace(/\n/g,' ')}`).join(' · ')}</p>
-    </div>`);
-  if (r.msg[2]) secs.push(`<div class="brief-sec"><h4>${r.msg[2].l}</h4><p>${r.msg[2].t}</p></div>`);
-
+  const prereq = (r.prereq && r.prereq.length)
+    ? `<div class="brief-sec"><h4>What they need to know first</h4><p>${r.prereq.map(esc).join(' · ')}</p></div>`
+    : '';
   document.getElementById('exp-preview').innerHTML = `
     <div class="brief-lbl">${EXP_LABELS[S.audience]||'RESEARCH SUMMARY'}</div>
-    <div class="brief-h">${r.msg[0].t}</div>
-    <div class="diagram-wrap" style="margin:18px 0;">${buildDiagram(r)}</div>
+    <div class="brief-h">${esc(exportTitle())}<span class="brief-for"> — for ${esc(AUD_LABELS[S.audience]||'your audience')}</span></div>
+    <div class="diagram-wrap" style="margin:20px 0;">${buildDiagram(r)}</div>
     <div class="divider"></div>
-    ${secs.join('')}
+    <div class="brief-sec"><h4>Supporting data</h4>
+      <p>${r.data.map(d => `<strong>${d.n}</strong> — ${(d.l||'').replace(/\n/g,' ')}`).join(' · ')}</p>
+    </div>
+    ${prereq}
     <div class="brief-sec">
       <h4>Plain language note</h4>
-      <p style="font-size:12px;color:var(--muted);">Generated by ResearchBridge · Based on abstract provided by researcher · For review before distribution.</p>
+      <p style="font-size:12px;color:var(--muted);">Generated by ResearchBridge · Based on the selected research summary · For review before distribution.</p>
     </div>`;
 }
 
