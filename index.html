@@ -7,341 +7,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
-  <style>
-    /* ============================================================
-       DESIGN TOKENS
-    ============================================================ */
-    :root {
-      --orange: #E86C2F;
-      --navy: #1B2A4A;
-      --navy-light: #2d4070;
-      --cream: #FAF8F5;
-      --grey: #F2F0EC;
-      --grey-mid: #D8D4CE;
-      --white: #ffffff;
-      --orange-soft: rgba(232,108,47,0.10);
-      --orange-line: rgba(232,108,47,0.35);
-      --muted: rgba(27,42,74,0.50);
-      --font-d: 'DM Serif Display', Georgia, serif;
-      --font-b: 'DM Sans', Helvetica, sans-serif;
-      --r: 6px;
-      --sh: 0 2px 10px rgba(27,42,74,0.08);
-      --sh-lg: 0 8px 32px rgba(27,42,74,0.12);
-    }
-
-    /* ============================================================
-       RESET
-    ============================================================ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { font-size: 16px; scroll-behavior: smooth; }
-    body { font-family: var(--font-b); background: var(--cream); color: var(--navy); line-height: 1.6; min-height: 100vh; }
-    h1,h2,h3 { font-family: var(--font-d); font-weight: 400; line-height: 1.1; }
-    button { font-family: var(--font-b); cursor: pointer; }
-    a { color: inherit; }
-
-    /* ============================================================
-       NAVBAR
-    ============================================================ */
-    .nav {
-      position: fixed; top: 0; left: 0; right: 0; height: 60px;
-      background: var(--white); border-bottom: 1px solid var(--grey-mid);
-      display: flex; align-items: center; padding: 0 40px; z-index: 100; gap: 20px;
-    }
-    .nav-logo {
-      font-family: var(--font-d); font-size: 18px; color: var(--navy);
-      text-decoration: none; display: flex; align-items: center; gap: 9px; cursor: pointer;
-    }
-    .nav-dot { width: 9px; height: 9px; background: var(--orange); border-radius: 50%; flex-shrink: 0; }
-    .nav-spacer { flex: 1; }
-    .nav-steps { display: none; align-items: center; gap: 6px; font-size: 13px; color: var(--muted); }
-    .sd {
-      width: 7px; height: 7px; border-radius: 50%; background: var(--grey-mid); transition: background 0.25s;
-    }
-    .sd.done { background: var(--orange); }
-    .sd.now { background: var(--orange); box-shadow: 0 0 0 3px var(--orange-soft); }
-    #nav-step-label { font-size: 12px; margin-left: 4px; font-weight: 500; }
-
-    /* ============================================================
-       BUTTONS
-    ============================================================ */
-    .btn {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 11px 22px; border-radius: var(--r); font-size: 14px; font-weight: 500;
-      transition: all 0.18s; border: none; white-space: nowrap;
-    }
-    .btn-p { background: var(--orange); color: var(--white); }
-    .btn-p:hover { background: #c85a20; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(232,108,47,0.28); }
-    .btn-s { background: var(--white); color: var(--navy); border: 1.5px solid var(--grey-mid); }
-    .btn-s:hover { border-color: var(--navy-light); }
-    .btn-g { background: none; color: var(--navy); padding: 10px 14px; }
-    .btn-g:hover { color: var(--orange); }
-    .btn:disabled { opacity: 0.38; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
-    .btn-lg { padding: 15px 30px; font-size: 16px; }
-
-    /* ============================================================
-       APP / SCREENS
-    ============================================================ */
-    .app { padding-top: 60px; min-height: 100vh; }
-    .screen { display: none; min-height: calc(100vh - 60px); animation: fadeIn 0.2s ease; }
-    .screen.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-
-    /* ============================================================
-       HOME
-    ============================================================ */
-    .home-hero {
-      max-width: 1100px; margin: 0 auto; padding: 80px 40px 80px;
-      display: grid; grid-template-columns: 1fr 420px; gap: 72px; align-items: center;
-    }
-    .hero-tag {
-      display: inline-block; background: var(--orange-soft); color: var(--orange);
-      font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-      padding: 5px 14px; border-radius: 50px; margin-bottom: 22px;
-    }
-    .hero-h1 { font-size: 50px; color: var(--navy); margin-bottom: 22px; }
-    .hero-h1 em { font-style: italic; color: var(--orange); }
-    .hero-sub { font-size: 17px; color: var(--muted); margin-bottom: 36px; max-width: 470px; line-height: 1.65; }
-    .hero-cta { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; }
-    .hero-card {
-      background: var(--white); border-radius: 12px; box-shadow: var(--sh-lg); padding: 28px;
-      border: 1px solid var(--grey);
-    }
-    .hc-label {
-      font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--muted); margin-bottom: 16px;
-    }
-    .hstep {
-      display: flex; align-items: flex-start; gap: 14px; padding: 13px; border-radius: var(--r);
-      background: var(--cream); margin-bottom: 10px;
-    }
-    .hstep:last-child { margin-bottom: 0; }
-    .hstep-n {
-      width: 26px; height: 26px; border-radius: 50%; background: var(--orange); color: var(--white);
-      display: flex; align-items: center; justify-content: center; font-size: 12px;
-      font-weight: 600; flex-shrink: 0;
-    }
-    .hstep h4 { font-family: var(--font-b); font-weight: 600; font-size: 13px; color: var(--navy); margin-bottom: 3px; }
-    .hstep p { font-size: 12px; color: var(--muted); line-height: 1.45; }
-
-    /* Scenarios section */
-    .home-sc { background: var(--navy); padding: 72px 40px; }
-    .home-sc-inner { max-width: 1100px; margin: 0 auto; }
-    .sc-tag {
-      display: inline-block; background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.65);
-      font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-      padding: 4px 12px; border-radius: 50px; margin-bottom: 14px;
-    }
-    .sc-h2 { font-family: var(--font-d); font-size: 34px; color: var(--white); margin-bottom: 10px; }
-    .sc-sub { font-size: 15px; color: rgba(255,255,255,0.5); margin-bottom: 44px; max-width: 540px; }
-    .sc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
-    .sc-card {
-      background: rgba(255,255,255,0.055); border: 1px solid rgba(255,255,255,0.11);
-      border-radius: 10px; padding: 26px; cursor: pointer; transition: all 0.18s;
-    }
-    .sc-card:hover { background: rgba(255,255,255,0.095); border-color: var(--orange); transform: translateY(-2px); }
-    .sc-num { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 10px; }
-    .sc-title { font-family: var(--font-d); font-size: 21px; color: var(--white); margin-bottom: 7px; }
-    .sc-desc { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 18px; line-height: 1.55; }
-    .sc-pills { display: flex; gap: 7px; flex-wrap: wrap; }
-    .pill {
-      background: rgba(232,108,47,0.14); color: var(--orange);
-      font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase;
-      padding: 3px 9px; border-radius: 50px;
-    }
-
-    /* ============================================================
-       STEP SCREENS
-    ============================================================ */
-    .step-wrap { max-width: 740px; margin: 0 auto; padding: 52px 40px 110px; }
-    .step-lbl {
-      font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--orange); margin-bottom: 10px;
-    }
-    .step-h2 { font-size: 34px; color: var(--navy); margin-bottom: 9px; }
-    .step-sub { font-size: 15px; color: var(--muted); max-width: 540px; margin-bottom: 36px; }
-
-    /* Bottom nav */
-    .step-nav {
-      position: fixed; bottom: 0; left: 0; right: 0; background: var(--white);
-      border-top: 1px solid var(--grey-mid); padding: 16px 40px;
-      display: flex; align-items: center; justify-content: space-between; z-index: 50;
-    }
-    .sn-info { font-size: 12px; color: var(--muted); }
-    .sn-btns { display: flex; gap: 10px; }
-
-    /* ============================================================
-       STEP 1: INPUT
-    ============================================================ */
-    .demo-row { display: flex; gap: 10px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
-    .demo-row span { font-size: 12px; color: var(--muted); }
-    .dbtn {
-      display: inline-flex; align-items: center; gap: 5px; padding: 7px 14px;
-      background: var(--white); border: 1.5px solid var(--grey-mid); border-radius: var(--r);
-      font-size: 12px; font-weight: 500; color: var(--navy); cursor: pointer; transition: all 0.18s;
-    }
-    .dbtn:hover { border-color: var(--orange); color: var(--orange); }
-    .ta {
-      width: 100%; min-height: 260px; padding: 18px; border: 1.5px solid var(--grey-mid);
-      border-radius: var(--r); font-family: var(--font-b); font-size: 14px; line-height: 1.65;
-      color: var(--navy); background: var(--white); resize: vertical; outline: none; transition: border-color 0.18s;
-    }
-    .ta:focus { border-color: var(--orange); }
-    .ta::placeholder { color: var(--muted); }
-    .ta-meta {
-      display: flex; justify-content: space-between; align-items: center;
-      font-size: 12px; color: var(--muted); margin: 8px 0 20px;
-    }
-    .notice {
-      background: rgba(27,42,74,0.045); border-left: 3px solid var(--navy-light);
-      padding: 11px 15px; border-radius: 0 var(--r) var(--r) 0; font-size: 12px; line-height: 1.55;
-    }
-
-    /* ============================================================
-       STEP 2: AUDIENCE
-    ============================================================ */
-    .aud-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 32px; }
-    .aud-card {
-      background: var(--white); border: 2px solid var(--grey); border-radius: 10px;
-      padding: 24px 20px; cursor: pointer; transition: all 0.18s;
-    }
-    .aud-card:hover { border-color: var(--orange-line); box-shadow: var(--sh); }
-    .aud-card.sel { border-color: var(--orange); background: var(--orange-soft); }
-    .aud-icon { font-size: 30px; margin-bottom: 10px; display: block; }
-    .aud-name { font-family: var(--font-d); font-size: 20px; color: var(--navy); margin-bottom: 5px; }
-    .aud-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
-
-    /* ============================================================
-       STEP 3: OBJECTIVE
-    ============================================================ */
-    .obj-list { display: flex; flex-direction: column; gap: 11px; margin-bottom: 32px; }
-    .obj-card {
-      background: var(--white); border: 2px solid var(--grey); border-radius: 10px;
-      padding: 18px 22px; cursor: pointer; transition: all 0.18s;
-      display: flex; align-items: center; gap: 18px;
-    }
-    .obj-card:hover { border-color: var(--orange-line); }
-    .obj-card.sel { border-color: var(--orange); background: var(--orange-soft); }
-    .obj-icon { font-size: 22px; flex-shrink: 0; }
-    .obj-card h4 { font-family: var(--font-b); font-weight: 600; font-size: 15px; margin-bottom: 3px; }
-    .obj-card p { font-size: 12px; color: var(--muted); }
-
-    /* ============================================================
-       RECOMMENDATIONS
-    ============================================================ */
-    .recs-hdr {
-      background: var(--navy); padding: 28px 40px;
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;
-    }
-    .recs-badges { display: flex; gap: 7px; margin-bottom: 10px; flex-wrap: wrap; }
-    .badge {
-      background: rgba(255,255,255,0.11); padding: 5px 13px; border-radius: 50px;
-      font-size: 11px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--white);
-    }
-    .badge.o { background: var(--orange); }
-    .recs-title { font-family: var(--font-d); font-size: 26px; color: var(--white); }
-    .recs-body { max-width: 880px; margin: 0 auto; padding: 36px 40px 110px; }
-
-    .rp {
-      background: var(--white); border-radius: 10px; border: 1px solid var(--grey); margin-bottom: 18px; overflow: hidden;
-    }
-    .rp-hdr {
-      display: flex; align-items: center; justify-content: space-between; padding: 18px 22px;
-      cursor: pointer; user-select: none; transition: background 0.14s;
-    }
-    .rp-hdr:hover { background: var(--cream); }
-    .rp-htitle { display: flex; align-items: center; gap: 13px; }
-    .rp-icon {
-      width: 34px; height: 34px; border-radius: 7px; background: var(--orange-soft);
-      display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0;
-    }
-    .rp-label { font-family: var(--font-b); font-weight: 600; font-size: 14px; }
-    .rp-chev { color: var(--muted); font-size: 13px; transition: transform 0.2s; }
-    .rp.open .rp-chev { transform: rotate(180deg); }
-    .rp-body { display: none; padding: 0 22px 22px; border-top: 1px solid var(--grey); }
-    .rp.open .rp-body { display: block; }
-    .rp-body-pad { padding-top: 18px; }
-
-    /* Message items */
-    .msg-item { border-left: 3px solid var(--orange); padding: 11px 14px; margin: 10px 0; background: var(--cream); border-radius: 0 var(--r) var(--r) 0; }
-    .msg-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--orange); margin-bottom: 5px; }
-    .msg-txt { font-size: 14px; color: var(--navy); line-height: 1.55; }
-
-    /* Data cards */
-    .data-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin: 14px 0; }
-    .dc { background: var(--cream); border-radius: var(--r); padding: 16px; text-align: center; }
-    .dc-num { font-family: var(--font-d); font-size: 30px; color: var(--orange); line-height: 1; margin-bottom: 5px; }
-    .dc-lbl { font-size: 11px; color: var(--muted); line-height: 1.4; }
-
-    /* Jargon */
-    .jargon-row {
-      display: grid; grid-template-columns: 1fr 20px 1fr; align-items: center; gap: 10px;
-      padding: 9px 0; border-bottom: 1px solid var(--grey); font-size: 13px;
-    }
-    .jargon-row:last-child { border-bottom: none; }
-    .jo { background: rgba(232,108,47,0.08); padding: 5px 9px; border-radius: var(--r); color: #b34e22; font-weight: 500; font-size: 12px; }
-    .ja { text-align: center; color: var(--muted); font-size: 12px; }
-    .jp { background: rgba(27,42,74,0.06); padding: 5px 9px; border-radius: var(--r); color: var(--navy); font-weight: 500; font-size: 12px; }
-
-    /* Format list */
-    .fmt-list { display: flex; flex-direction: column; gap: 9px; margin-top: 10px; }
-    .fmt-item { display: flex; align-items: flex-start; gap: 11px; padding: 11px; background: var(--cream); border-radius: var(--r); }
-    .fmt-ico { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
-    .fmt-item h5 { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-    .fmt-item p { font-size: 12px; color: var(--muted); }
-
-    /* ============================================================
-       LOADING
-    ============================================================ */
-    .loading {
-      display: none; position: fixed; inset: 0;
-      background: rgba(250,248,245,0.96); z-index: 200;
-      flex-direction: column; align-items: center; justify-content: center; gap: 22px;
-    }
-    .loading.on { display: flex; }
-    .spinner {
-      width: 44px; height: 44px; border: 3.5px solid var(--grey-mid);
-      border-top-color: var(--orange); border-radius: 50%; animation: spin 0.7s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-h { font-family: var(--font-d); font-size: 22px; color: var(--navy); }
-    .loading-s { font-size: 13px; color: var(--muted); }
-
-    /* ============================================================
-       EXPORT
-    ============================================================ */
-    .exp-wrap { max-width: 860px; margin: 0 auto; padding: 52px 40px 110px; }
-    .exp-preview {
-      background: var(--white); border-radius: 10px; border: 1px solid var(--grey);
-      padding: 36px; margin: 28px 0; box-shadow: var(--sh);
-    }
-    .brief-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--orange); margin-bottom: 14px; }
-    .brief-h { font-family: var(--font-d); font-size: 26px; color: var(--navy); margin-bottom: 18px; line-height: 1.2; }
-    .brief-sec { margin-bottom: 18px; }
-    .brief-sec h4 { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
-    .brief-sec p { font-size: 14px; line-height: 1.6; }
-    .divider { height: 1px; background: var(--grey); margin: 22px 0; }
-    .exp-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-
-    /* ============================================================
-       RESPONSIVE
-    ============================================================ */
-    @media (max-width: 760px) {
-      .home-hero { grid-template-columns: 1fr; padding: 52px 24px; }
-      .hero-card { display: none; }
-      .aud-grid { grid-template-columns: 1fr; }
-      .sc-grid { grid-template-columns: 1fr; }
-      .data-grid { grid-template-columns: 1fr 1fr; }
-      .step-wrap, .recs-body, .exp-wrap { padding-left: 20px; padding-right: 20px; }
-      .nav { padding: 0 20px; }
-      .step-nav { padding: 14px 20px; }
-    }
-  </style>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
 <!-- NAV -->
 <nav class="nav">
-  <div class="nav-logo" onclick="go('home')">
+  <div class="nav-logo" role="button" tabindex="0" onclick="go('home')" onkeydown="onKeyActivate(event, () => go('home'))">
     <div class="nav-dot"></div>ResearchBridge
   </div>
   <div class="nav-spacer"></div>
@@ -358,7 +30,7 @@
 </nav>
 
 <!-- LOADING -->
-<div class="loading" id="loading">
+<div class="loading" id="loading" aria-live="polite">
   <div class="spinner"></div>
   <div class="loading-h">Analysing your abstract…</div>
   <div class="loading-s">Generating audience-specific recommendations</div>
@@ -379,7 +51,7 @@
         </h1>
         <p class="hero-sub">
           ResearchBridge helps PhD researchers in health sciences communicate their findings
-          to policymakers, clinical teams, and the public — without losing the science.
+          to policymakers, clinical teams, funders, patients, and the public — without losing the science.
         </p>
         <div class="hero-cta">
           <button class="btn btn-p btn-lg" onclick="go('input')">Start now →</button>
@@ -394,11 +66,11 @@
         </div>
         <div class="hstep">
           <div class="hstep-n">2</div>
-          <div><h4>Choose your audience</h4><p>Policymaker, clinical team, patient group, or general public</p></div>
+          <div><h4>Choose your audience</h4><p>Policymaker, clinical team, funder, patient group, or public</p></div>
         </div>
         <div class="hstep">
           <div class="hstep-n">3</div>
-          <div><h4>Get tailored recommendations</h4><p>Key messages, plain language, format &amp; channel suggestions</p></div>
+          <div><h4>Get tailored recommendations</h4><p>Audience profile, key message, plain language, likely questions</p></div>
         </div>
         <div class="hstep">
           <div class="hstep-n">4</div>
@@ -412,13 +84,13 @@
         <h2 class="sc-h2">See ResearchBridge in action</h2>
         <p class="sc-sub">Two real research communication challenges from the HEADS PhD programme. Click to load a scenario.</p>
         <div class="sc-grid">
-          <div class="sc-card" onclick="loadDemo('s1')">
+          <div class="sc-card" role="button" tabindex="0" onclick="loadDemo('s1')" onkeydown="onKeyActivate(event, () => loadDemo('s1'))">
             <div class="sc-num">Scenario 1</div>
             <div class="sc-title">Policy brief for the DGS</div>
             <div class="sc-desc">Sofia has 48 hours to turn her colorectal cancer screening research into a one-page brief for a policy decision-maker. She has never written a policy brief.</div>
             <div class="sc-pills"><span class="pill">Policymaker</span><span class="pill">Motivate a decision</span></div>
           </div>
-          <div class="sc-card" onclick="loadDemo('s2')">
+          <div class="sc-card" role="button" tabindex="0" onclick="loadDemo('s2')" onkeydown="onKeyActivate(event, () => loadDemo('s2'))">
             <div class="sc-num">Scenario 2</div>
             <div class="sc-title">Clinical presentation — Cardiology</div>
             <div class="sc-desc">Sofia presents her cardiac risk model to cardiologists who are not data scientists. Half her charts will not make sense to them.</div>
@@ -448,7 +120,7 @@ Example: 'We conducted a study of X in N participants. Our main finding was…'"
         <button class="btn btn-g" style="font-size:12px;padding:3px 8px;" onclick="clearTa()">Clear</button>
       </div>
       <div class="notice">
-        💡 <strong>Tip:</strong> The more specific your text, the more targeted the recommendations. You can paste an abstract, a results section, or even bullet points.
+        💡 <strong>Tip:</strong> The more specific your text, the more targeted the recommendations. Paste an abstract, a results section, or even bullet points — ResearchBridge will flag the jargon and numbers it finds in <em>your</em> text.
       </div>
     </div>
     <div class="step-nav">
@@ -467,22 +139,27 @@ Example: 'We conducted a study of X in N participants. Our main finding was…'"
       <h2 class="step-h2">Who is your audience?</h2>
       <p class="step-sub">Select the group you want to reach. Your recommendations will be tailored to them.</p>
       <div class="aud-grid">
-        <div class="aud-card" id="a-policymaker" onclick="selAud('policymaker')">
+        <div class="aud-card" id="a-policymaker" role="button" tabindex="0" aria-pressed="false" onclick="selAud('policymaker')" onkeydown="onKeyActivate(event, () => selAud('policymaker'))">
           <span class="aud-icon">🏛</span>
           <div class="aud-name">Policy Maker</div>
           <p class="aud-desc">Government officials, health ministry staff, regulatory bodies. They need evidence to justify decisions — quickly.</p>
         </div>
-        <div class="aud-card" id="a-clinical" onclick="selAud('clinical')">
+        <div class="aud-card" id="a-clinical" role="button" tabindex="0" aria-pressed="false" onclick="selAud('clinical')" onkeydown="onKeyActivate(event, () => selAud('clinical'))">
           <span class="aud-icon">🩺</span>
           <div class="aud-name">Clinical Team</div>
           <p class="aud-desc">Doctors, nurses, allied health professionals. They need practical implications, not statistical methods.</p>
         </div>
-        <div class="aud-card" id="a-patient" onclick="selAud('patient')">
+        <div class="aud-card" id="a-funder" role="button" tabindex="0" aria-pressed="false" onclick="selAud('funder')" onkeydown="onKeyActivate(event, () => selAud('funder'))">
+          <span class="aud-icon">💼</span>
+          <div class="aud-name">Funders &amp; Stakeholders</div>
+          <p class="aud-desc">Grant bodies, non-academic partners, industry. They need impact, value for money, and progress against the plan.</p>
+        </div>
+        <div class="aud-card" id="a-patient" role="button" tabindex="0" aria-pressed="false" onclick="selAud('patient')" onkeydown="onKeyActivate(event, () => selAud('patient'))">
           <span class="aud-icon">👥</span>
           <div class="aud-name">Patient Group</div>
           <p class="aud-desc">Patients, carers, and patient advocates. They need accessible language and focus on what it means for them.</p>
         </div>
-        <div class="aud-card" id="a-public" onclick="selAud('public')">
+        <div class="aud-card" id="a-public" role="button" tabindex="0" aria-pressed="false" onclick="selAud('public')" onkeydown="onKeyActivate(event, () => selAud('public'))">
           <span class="aud-icon">🌍</span>
           <div class="aud-name">General Public</div>
           <p class="aud-desc">Journalists, community groups, social media audiences. They need engaging, jargon-free summaries.</p>
@@ -528,33 +205,43 @@ Example: 'We conducted a study of X in N participants. Our main finding was…'"
       <button class="btn btn-s" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.25);color:var(--white);" onclick="go('export')">Export →</button>
     </div>
     <div class="recs-body">
+      <!-- Audience profile (survey R11) -->
+      <div class="profile-card" id="profile-card"></div>
+
       <div class="rp open" id="rp1">
-        <div class="rp-hdr" onclick="toggleRp('rp1')">
-          <div class="rp-htitle"><div class="rp-icon">💬</div><span class="rp-label">Key Message Structure</span></div>
+        <div class="rp-hdr" role="button" tabindex="0" aria-expanded="true" onclick="toggleRp('rp1')" onkeydown="onKeyActivate(event, () => toggleRp('rp1'))">
+          <div class="rp-htitle"><div class="rp-icon">💬</div><span class="rp-label">Key Message &amp; Prerequisites</span></div>
           <span class="rp-chev">▾</span>
         </div>
         <div class="rp-body"><div class="rp-body-pad" id="rp1-body"></div></div>
       </div>
       <div class="rp open" id="rp2">
-        <div class="rp-hdr" onclick="toggleRp('rp2')">
+        <div class="rp-hdr" role="button" tabindex="0" aria-expanded="true" onclick="toggleRp('rp2')" onkeydown="onKeyActivate(event, () => toggleRp('rp2'))">
           <div class="rp-htitle"><div class="rp-icon">📊</div><span class="rp-label">Data to Highlight</span></div>
           <span class="rp-chev">▾</span>
         </div>
         <div class="rp-body"><div class="rp-body-pad" id="rp2-body"></div></div>
       </div>
       <div class="rp open" id="rp3">
-        <div class="rp-hdr" onclick="toggleRp('rp3')">
+        <div class="rp-hdr" role="button" tabindex="0" aria-expanded="true" onclick="toggleRp('rp3')" onkeydown="onKeyActivate(event, () => toggleRp('rp3'))">
           <div class="rp-htitle"><div class="rp-icon">📝</div><span class="rp-label">Plain Language Suggestions</span></div>
           <span class="rp-chev">▾</span>
         </div>
         <div class="rp-body"><div class="rp-body-pad" id="rp3-body"></div></div>
       </div>
       <div class="rp open" id="rp4">
-        <div class="rp-hdr" onclick="toggleRp('rp4')">
+        <div class="rp-hdr" role="button" tabindex="0" aria-expanded="true" onclick="toggleRp('rp4')" onkeydown="onKeyActivate(event, () => toggleRp('rp4'))">
           <div class="rp-htitle"><div class="rp-icon">📬</div><span class="rp-label">Format &amp; Channels</span></div>
           <span class="rp-chev">▾</span>
         </div>
         <div class="rp-body"><div class="rp-body-pad" id="rp4-body"></div></div>
+      </div>
+      <div class="rp open" id="rp5">
+        <div class="rp-hdr" role="button" tabindex="0" aria-expanded="true" onclick="toggleRp('rp5')" onkeydown="onKeyActivate(event, () => toggleRp('rp5'))">
+          <div class="rp-htitle"><div class="rp-icon">💬</div><span class="rp-label">Likely Questions &amp; How to Answer</span></div>
+          <span class="rp-chev">▾</span>
+        </div>
+        <div class="rp-body"><div class="rp-body-pad" id="rp5-body"></div></div>
       </div>
     </div>
     <div class="step-nav">
@@ -574,10 +261,10 @@ Example: 'We conducted a study of X in N participants. Our main finding was…'"
       <p class="step-sub">Preview your output below and download in your preferred format.</p>
       <div class="exp-preview" id="exp-preview"></div>
       <div class="exp-actions">
-        <button class="btn btn-p" onclick="simDl('PDF')">📄 Download as PDF</button>
-        <button class="btn btn-s" onclick="simDl('slides')">🖥 Export slide outline</button>
-        <button class="btn btn-s" onclick="simCopy()">📋 Copy text</button>
-        <button class="btn btn-g" onclick="simShare()">🔗 Share link</button>
+        <button class="btn btn-p" onclick="simDl('PDF', event)">📄 Download as PDF</button>
+        <button class="btn btn-s" onclick="simDl('slides', event)">🖥 Export slide outline</button>
+        <button class="btn btn-s" onclick="simCopy(event)">📋 Copy text</button>
+        <button class="btn btn-g" onclick="simShare(event)">🔗 Share link</button>
       </div>
       <div class="divider"></div>
       <div style="display:flex;gap:14px;align-items:center;">
@@ -589,590 +276,7 @@ Example: 'We conducted a study of X in N participants. Our main finding was…'"
 
 </div>
 
-<script>
-/* ============================================================
-   STATE
-============================================================ */
-const S = { screen: 'home', abstract: '', audience: null, objective: null };
-
-/* ============================================================
-   DEMO DATA
-============================================================ */
-const DEMOS = {
-  s1: {
-    audience: 'policymaker', objective: 'motivate',
-    abstract: `We developed a machine learning model to predict 10-year colorectal cancer risk in adults aged 40–65 using electronic health records from 12,847 patients across three Portuguese hospital centres (2015–2022). The model achieved an AUC of 0.83 (95% CI: 0.79–0.87) and identified family history, BMI >30, and smoking status as the three strongest predictors. Compared to current national screening guidelines, our model would identify an additional 23% of high-risk individuals while reducing unnecessary colonoscopies by 31%. Implementation as a primary care decision-support tool could prevent an estimated 340 colorectal cancer deaths annually in Portugal.`
-  },
-  s2: {
-    audience: 'clinical', objective: 'present-tool',
-    abstract: `This study presents a real-time predictive model for in-hospital cardiac events in patients admitted to the Coronary Care Unit. Using a deep learning architecture trained on 6-hour vital sign sequences from 2,341 admissions (2019–2023), the model predicted adverse events 4 hours in advance with sensitivity of 79% and specificity of 88%. Integration into the bedside monitoring system showed a 34% reduction in false alarm fatigue among nursing staff. The model requires approximately 2 GB of GPU memory and achieves inference latency under 200 ms per patient.`
-  }
-};
-
-/* ============================================================
-   OBJECTIVES
-============================================================ */
-const OBJS = {
-  policymaker: [
-    { id:'motivate', icon:'🎯', h:'Motivate a decision', p:'Make the case for a specific policy action or programme' },
-    { id:'brief',    icon:'📋', h:'Summarise the evidence', p:'Provide an accessible overview of the research landscape' },
-    { id:'funding',  icon:'💶', h:'Support a funding request', p:'Justify resource allocation with evidence-based arguments' }
-  ],
-  clinical: [
-    { id:'present-tool', icon:'🔬', h:'Introduce a new tool or method', p:'Present a new approach and argue for its adoption' },
-    { id:'findings',     icon:'📈', h:'Share new clinical findings', p:'Communicate results and their implications for practice' },
-    { id:'protocol',     icon:'📋', h:'Propose a protocol change', p:'Present evidence supporting a change to clinical practice' }
-  ],
-  patient: [
-    { id:'explain',  icon:'💡', h:'Explain your research', p:'Help patients understand what you are studying and why' },
-    { id:'results',  icon:'📊', h:'Share study results', p:'Communicate findings and what they mean for patients' },
-    { id:'recruit',  icon:'🤝', h:'Recruit participants', p:'Invite eligible individuals to take part in your study' }
-  ],
-  public: [
-    { id:'awareness',  icon:'📢', h:'Raise awareness', p:'Help people understand why this health issue matters' },
-    { id:'findings',   icon:'🔍', h:'Share key findings', p:'Communicate your results to a broad non-specialist audience' },
-    { id:'relevance',  icon:'❤️', h:'Explain personal relevance', p:'Connect the research to everyday life and individual health' }
-  ]
-};
-
-/* ============================================================
-   RECOMMENDATIONS
-============================================================ */
-const RECS = {
-  policymaker: {
-    motivate: {
-      al:'Policymaker', ol:'Motivate a decision',
-      msg:[
-        { l:'Lead with', t:'An AI-based screening tool could prevent 340 colorectal cancer deaths per year in Portugal — validated across nearly 13,000 Portuguese patients.' },
-        { l:'Support with', t:'The model identifies 23% more high-risk individuals than current guidelines, while reducing unnecessary colonoscopies by 31%, cutting both human and financial costs.' },
-        { l:'The ask', t:'Approve a pilot implementation in 3 primary care centres in 2026, with a 12-month evaluation and publication of results.' }
-      ],
-      data:[
-        { n:'340', l:'preventable deaths\nper year in Portugal' },
-        { n:'23%', l:'more high-risk\nindividuals identified' },
-        { n:'31%', l:'fewer unnecessary\ncolonscopies' }
-      ],
-      jargon:[
-        { o:'AUC of 0.83', p:'high accuracy, independently verified' },
-        { o:'95% CI: 0.79–0.87', p:'→ remove entirely' },
-        { o:'machine learning model', p:'AI-based risk prediction tool' },
-        { o:'electronic health records', p:'patient medical records' },
-        { o:'primary care decision-support', p:'tool for GPs to flag at-risk patients' }
-      ],
-      fmt:[
-        { i:'📄', h:'Format: 1-page PDF policy brief', p:'Maximum 400 words. Lead with patient impact, not study design.' },
-        { i:'📧', h:'Channel: Direct email to DGS', p:'Address the Director de Serviços or deputy. CC relevant programme coordinator.' },
-        { i:'📞', h:'Follow-up: Offer a 15-minute call', p:'Attach the full paper as reference only — not required reading.' },
-        { i:'⚠️', h:'Avoid: Methodological language in paragraph 1', p:'Start with the outcome (340 deaths), then the evidence.' }
-      ]
-    },
-    brief: {
-      al:'Policymaker', ol:'Summarise the evidence',
-      msg:[
-        { l:'Framing', t:'Current screening guidelines miss a significant proportion of high-risk adults before diagnosis at early stages.' },
-        { l:'Evidence overview', t:'Three independent Portuguese studies (2019–2023) converge on AI-assisted early detection as both accurate and cost-effective in primary care settings.' },
-        { l:'Conclusion', t:'The evidence base supports a structured evaluation of AI-assisted screening within the Portuguese National Health Service.' }
-      ],
-      data:[
-        { n:'3', l:'independent Portuguese\nstudies aligned' },
-        { n:'+23%', l:'more high-risk patients\nidentified vs. guidelines' },
-        { n:'2026', l:'optimal window\nfor pilot evaluation' }
-      ],
-      jargon:[
-        { o:'AUC / ROC', p:'accuracy measure' },
-        { o:'prospective cohort', p:'study following patients over time' },
-        { o:'systematic review', p:'comprehensive evidence review' }
-      ],
-      fmt:[
-        { i:'📋', h:'Format: 2-page evidence summary', p:'Include a table comparing existing approaches and their limitations.' },
-        { i:'📎', h:'Attach: Key papers as annexes', p:'Annotate each with a one-line plain-language summary.' }
-      ]
-    },
-    funding: {
-      al:'Policymaker', ol:'Support a funding request',
-      msg:[
-        { l:'The problem', t:'Colorectal cancer is the second most common cancer in Portugal, with significant preventable mortality if detected early.' },
-        { l:'The solution', t:'An AI-based screening tool validated in Portuguese hospitals can identify high-risk patients earlier, reducing costs and saving lives.' },
-        { l:'The request', t:'Request €X for a 2-year pilot across 5 primary care units, including implementation, training, and independent evaluation.' }
-      ],
-      data:[
-        { n:'340', l:'lives saved\nper year (projected)' },
-        { n:'31%', l:'reduction in unnecessary\nprocedures (cost savings)' },
-        { n:'2 yr', l:'pilot timeline\nto produce evidence' }
-      ],
-      jargon:[
-        { o:'cost-effectiveness ratio', p:'value for money' },
-        { o:'health technology assessment', p:'evaluation of the tool\'s benefits and costs' },
-        { o:'implementation science', p:'how to put the research into practice' }
-      ],
-      fmt:[
-        { i:'💶', h:'Format: Structured budget proposal', p:'Include cost per patient screened vs. cost of late-stage cancer treatment.' },
-        { i:'📊', h:'Attach: Economic modelling summary', p:'Even a simple cost-benefit table strengthens the case.' }
-      ]
-    }
-  },
-  clinical: {
-    'present-tool': {
-      al:'Clinical Team', ol:'Introduce a new tool',
-      msg:[
-        { l:'Lead with clinical impact', t:'This AI tool alerts your team 4 hours before an adverse cardiac event — with 34% fewer false alarms than current monitoring.' },
-        { l:'Support with evidence', t:'Validated across 2,341 CCU admissions at a Portuguese hospital centre. Correctly predicted 4 in 5 critical events; cleared 9 in 10 low-risk patients accurately.' },
-        { l:'The ask', t:'Trial the tool alongside existing monitoring for 3 months. No change to protocols required during the evaluation period.' }
-      ],
-      data:[
-        { n:'4h', l:'advance warning\nbefore cardiac event' },
-        { n:'34%', l:'reduction in\nfalse alarm fatigue' },
-        { n:'79%', l:'of critical events\ncorrectly predicted' }
-      ],
-      jargon:[
-        { o:'deep learning architecture', p:'AI system trained on vital sign patterns' },
-        { o:'sensitivity 79% / specificity 88%', p:'detects 4 in 5 events; clears 9 in 10 low-risk patients correctly' },
-        { o:'LSTM neural network', p:'pattern-recognition algorithm' },
-        { o:'inference latency 200ms', p:'result appears instantly' },
-        { o:'2 GB GPU memory', p:'→ remove — not relevant to clinicians' }
-      ],
-      fmt:[
-        { i:'🖥', h:'Replace: ROC curve and training graphs', p:'Use a "before vs. after alarms" comparison chart instead.' },
-        { i:'📋', h:'Add: Prerequisite slide at the start', p:'"What you need to know first" — 4 concepts in plain language.' },
-        { i:'⏱', h:'Format: 20-minute presentation', p:'10 min clinical story + 5 min evidence + 5 min Q&A. Demo the interface live if possible.' },
-        { i:'💬', h:'Prepare: Objection — "What if it is wrong?"', p:'Answer: focus on the 34% alarm reduction, not the 79% prediction rate.' }
-      ]
-    },
-    findings: {
-      al:'Clinical Team', ol:'Share new findings',
-      msg:[
-        { l:'Clinical headline', t:'Patients admitted to the CCU with elevated troponin AND irregularity in 6-hour vital sign patterns face a 3× higher risk of adverse events within 24 hours.' },
-        { l:'What this means for practice', t:'This pattern can be detected automatically, 4 hours before the event, providing a window for preventive intervention.' },
-        { l:'Next step', t:'We are seeking clinical feedback on the alert threshold before a broader rollout.' }
-      ],
-      data:[
-        { n:'3×', l:'higher event risk\nwhen pattern detected' },
-        { n:'4h', l:'window for\nprevention' },
-        { n:'2341', l:'admissions\nin validation set' }
-      ],
-      jargon:[
-        { o:'hazard ratio 3.1 (95% CI 2.4–4.0)', p:'3× higher risk — statistically robust' },
-        { o:'Kaplan-Meier curves', p:'→ replace with clinical event timeline' },
-        { o:'p < 0.001', p:'→ remove from slides; mention verbally if asked' }
-      ],
-      fmt:[
-        { i:'📊', h:'Replace forest plots with a clinical impact table', p:'Columns: Patient group | Event rate without tool | Event rate with tool | Difference' },
-        { i:'🎯', h:'End with: "What we need from you"', p:'Clinician input on acceptable false positive rates and alert fatigue thresholds.' }
-      ]
-    },
-    protocol: {
-      al:'Clinical Team', ol:'Propose a protocol change',
-      msg:[
-        { l:'Current practice gap', t:'Current triage protocols do not use continuous vital sign pattern data for risk stratification in CCU admissions.' },
-        { l:'Proposed change', t:'Adding an AI-based pattern check at hour 2 of admission could identify high-risk patients earlier, enabling more targeted monitoring.' },
-        { l:'Evidence basis', t:'Validated in 2,341 admissions with 79% sensitivity and 34% reduction in alarm fatigue. Independent external validation ongoing.' }
-      ],
-      data:[
-        { n:'79%', l:'sensitivity in\nvalidation set' },
-        { n:'2 min', l:'time added per\npatient assessment' },
-        { n:'3 mo', l:'proposed pilot\nduration' }
-      ],
-      jargon:[
-        { o:'AUC 0.87', p:'high discriminative accuracy' },
-        { o:'NNT (number needed to treat)', p:'→ replace with "for every 5 patients flagged, 4 benefit from early intervention"' }
-      ],
-      fmt:[
-        { i:'📋', h:'Format: 1-page protocol amendment proposal', p:'Current practice → Proposed change → Evidence → Metrics for evaluation.' },
-        { i:'✅', h:'Include: Implementation checklist', p:'What training staff need, what changes to the EMR, who approves.' }
-      ]
-    }
-  },
-  patient: {
-    explain: {
-      al:'Patient Group', ol:'Explain your research',
-      msg:[
-        { l:'What we are studying', t:'We are developing a computer tool that learns to spot patterns in routine health check-up data, to identify people who may be at higher risk of colorectal cancer before symptoms appear.' },
-        { l:'Why it matters', t:'Most colorectal cancer cases are found late, when treatment is harder. Finding people at risk earlier means treatment can start sooner — when it works best.' },
-        { l:'What we are asking', t:'We are currently recruiting volunteers to check that the tool works fairly for different groups of people.' }
-      ],
-      data:[
-        { n:'1 in 20', l:'people develop\ncolorectal cancer' },
-        { n:'90%', l:'survival rate if\ndetected early' },
-        { n:'12,847', l:'people already\nin our study' }
-      ],
-      jargon:[
-        { o:'machine learning algorithm', p:'computer tool that learns from patient data' },
-        { o:'AUC of 0.83', p:'→ omit; say "the tool has been tested and performs accurately"' },
-        { o:'electronic health records', p:'your routine medical records' },
-        { o:'colorectal cancer incidence', p:'how often colorectal cancer occurs' }
-      ],
-      fmt:[
-        { i:'📄', h:'Format: 1-page patient information sheet', p:'Use plain language (reading age 12). Avoid acronyms. Include a FAQ box.' },
-        { i:'🖼', h:'Add: A simple diagram of how the tool works', p:'Show the path: your data → tool → GP alert → earlier screening.' }
-      ]
-    },
-    results: {
-      al:'Patient Group', ol:'Share study results',
-      msg:[
-        { l:'What we found', t:'Our study shows that a computer tool using your routine health records can identify people at high risk of colorectal cancer earlier than current screening guidelines.' },
-        { l:'What this means for you', t:'In the future, this could mean your GP is alerted to check you earlier — even before you notice any symptoms.' },
-        { l:'What happens next', t:'We are working with health authorities to evaluate whether this tool can be used in Portuguese primary care clinics.' }
-      ],
-      data:[
-        { n:'340', l:'lives that could be\nsaved per year' },
-        { n:'+23%', l:'more at-risk patients\nidentified early' },
-        { n:'2026', l:'target year for\npilot in GP clinics' }
-      ],
-      jargon:[
-        { o:'sensitivity/specificity', p:'→ omit; use "accurately identifies most at-risk people while avoiding unnecessary worry for low-risk people"' },
-        { o:'95% confidence interval', p:'→ omit entirely' },
-        { o:'primary care', p:'your GP or family health centre' }
-      ],
-      fmt:[
-        { i:'💬', h:'Format: Short letter or video message', p:'Begin with "Thank you for being part of our study." End with what you are doing with the findings.' },
-        { i:'📞', h:'Offer: A Q&A session or helpline', p:'Many participants want to know if they were in the high-risk group. Plan your communication policy in advance.' }
-      ]
-    },
-    recruit: {
-      al:'Patient Group', ol:'Recruit participants',
-      msg:[
-        { l:'Why we need your help', t:'We are developing a computer tool to detect colorectal cancer risk earlier. To make it fair and accurate, we need it tested on a wide range of people.' },
-        { l:'What being in the study involves', t:'We would ask to use your anonymised health records from your GP. No extra tests, no appointments, no disruption to your care.' },
-        { l:'Your rights', t:'Your participation is entirely voluntary. You can withdraw at any time without affecting your healthcare.' }
-      ],
-      data:[
-        { n:'30 min', l:'total time\nrequirement' },
-        { n:'100%', l:'data kept\nanonymous' },
-        { n:'0', l:'extra medical\nappointments needed' }
-      ],
-      jargon:[
-        { o:'informed consent', p:'your permission — given freely after we explain everything' },
-        { o:'anonymised data', p:'your information with your name and address removed' },
-        { o:'ethics approval', p:'an independent committee has reviewed and approved this study' }
-      ],
-      fmt:[
-        { i:'📱', h:'Channel: Social media + GP waiting room', p:'Short version (< 100 words) for online; printed leaflet for the clinic.' },
-        { i:'✅', h:'Include: Clear eligibility criteria', p:'"You can take part if you are aged 40–65, registered with a GP in [region], and have no prior colorectal cancer diagnosis."' }
-      ]
-    }
-  },
-  public: {
-    awareness: {
-      al:'General Public', ol:'Raise awareness',
-      msg:[
-        { l:'The headline', t:'Colorectal cancer kills over 4,000 people in Portugal every year — and most of those deaths are preventable if the cancer is found early enough.' },
-        { l:'What researchers are doing', t:'A new AI tool, developed at the University of Porto, could identify people at high risk before symptoms appear, using data already collected during routine GP visits.' },
-        { l:'Why it matters now', t:'The tool is ready for evaluation. What is needed is the political will and investment to test it at scale.' }
-      ],
-      data:[
-        { n:'4,000+', l:'colorectal cancer\ndeaths/year in Portugal' },
-        { n:'90%', l:'survival rate if\ncaught early' },
-        { n:'340', l:'preventable deaths\nwith this tool' }
-      ],
-      jargon:[
-        { o:'machine learning', p:'AI — a computer that learns from data' },
-        { o:'AUC / sensitivity / specificity', p:'→ omit entirely; say "tested and shown to work"' },
-        { o:'primary care', p:'your GP or family health centre' },
-        { o:'electronic health records', p:'the medical notes your doctor keeps' }
-      ],
-      fmt:[
-        { i:'📰', h:'Format: Press release or news article', p:'Inverted pyramid: headline → key facts → background. No more than 500 words.' },
-        { i:'🐦', h:'Social: Thread or short video', p:'Lead with the human story. Use the 340 number as the hook.' },
-        { i:'📷', h:'Visuals: Infographic with the 3 key numbers', p:'340 / 90% / +23%. Simple, shareable, memorable.' }
-      ]
-    },
-    findings: {
-      al:'General Public', ol:'Share key findings',
-      msg:[
-        { l:'What we found', t:'A new AI tool, trained on data from nearly 13,000 Portuguese patients, can predict who is at risk of colorectal cancer up to 10 years before diagnosis.' },
-        { l:'Why it is important', t:'The tool could save 340 lives a year in Portugal — and would reduce unnecessary procedures for thousands more who are not at high risk.' },
-        { l:'What happens next', t:'The research team is working with health authorities to plan a pilot programme in Portuguese primary care clinics.' }
-      ],
-      data:[
-        { n:'340', l:'lives saved\nper year' },
-        { n:'12,847', l:'Portuguese patients\nstudied' },
-        { n:'10yr', l:'predicted risk\nhorizon' }
-      ],
-      jargon:[
-        { o:'AUC 0.83', p:'→ omit; say "independently verified as accurate"' },
-        { o:'95% confidence interval', p:'→ omit' },
-        { o:'randomised controlled trial', p:'a rigorous type of scientific study' }
-      ],
-      fmt:[
-        { i:'📱', h:'Format: Short explainer (blog or social thread)', p:'Lead with the most surprising finding. Use analogies. End with a call to action.' },
-        { i:'🎥', h:'Consider: 60-second explainer video', p:'Script: Problem → Discovery → Implication → What you can do.' }
-      ]
-    },
-    relevance: {
-      al:'General Public', ol:'Explain personal relevance',
-      msg:[
-        { l:'What this means for you', t:'If you are between 40 and 65 years old and visit your GP regularly, this research could one day mean your doctor spots your cancer risk earlier — without any extra tests.' },
-        { l:'How it works in plain terms', t:'Your routine blood tests and GP records already contain clues about cancer risk. The new tool reads those clues faster and more reliably than any existing guidelines.' },
-        { l:'What to do now', t:'Ask your GP about your colorectal cancer risk, especially if you have a family history. Early conversations save lives.' }
-      ],
-      data:[
-        { n:'40–65', l:'the age group who\nbenefit most' },
-        { n:'0', l:'extra tests needed —\njust existing records' },
-        { n:'1 in 20', l:'people develop\ncolorectal cancer' }
-      ],
-      jargon:[
-        { o:'algorithm', p:'a set of rules the computer follows' },
-        { o:'biomarkers', p:'measurements in your blood or body that give clues about your health' },
-        { o:'risk stratification', p:'grouping people by their level of risk' }
-      ],
-      fmt:[
-        { i:'🤝', h:'Tone: Empathetic, not alarming', p:'Start with hope ("this research could help you"). Avoid statistics-heavy language.' },
-        { i:'📲', h:'Channel: Patient-facing social media or health app', p:'Short video (< 90 seconds) works best for this audience.' }
-      ]
-    }
-  }
-};
-
-/* ============================================================
-   NAVIGATION
-============================================================ */
-function go(screen) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-' + screen).classList.add('active');
-  S.screen = screen;
-  updateNav(screen);
-  window.scrollTo(0,0);
-}
-
-function updateNav(screen) {
-  const steps = ['input','audience','objective','recommendations'];
-  const ns = document.getElementById('nav-steps');
-  const ha = document.getElementById('nav-home-area');
-  const idx = steps.indexOf(screen);
-  if (screen === 'home' || screen === 'export') {
-    ns.style.display = 'none';
-    ha.style.display = (screen === 'home') ? '' : 'none';
-  } else {
-    ns.style.display = 'flex';
-    ha.style.display = 'none';
-    steps.forEach((_, i) => {
-      const d = document.getElementById('d'+(i+1));
-      if (d) d.className = 'sd' + (i < idx ? ' done' : i === idx ? ' now' : '');
-    });
-    const lbls = ['Input','Audience','Objective','Recommendations'];
-    document.getElementById('nav-step-label').textContent = (idx+1)+'/4 — '+(lbls[idx]||'');
-  }
-}
-
-/* ============================================================
-   DEMOS
-============================================================ */
-function loadDemo(id) {
-  const d = DEMOS[id];
-  S.abstract = d.abstract; S.audience = d.audience; S.objective = d.objective;
-  document.getElementById('ta').value = d.abstract;
-  onTaInput();
-  selAud(d.audience, false);
-  buildObjs(d.audience);
-  setTimeout(() => selObj(d.objective), 40);
-  go('input');
-}
-
-function fillDemo(id) {
-  const d = DEMOS[id];
-  document.getElementById('ta').value = d.abstract;
-  S.abstract = d.abstract;
-  onTaInput();
-  S.audience = d.audience; S.objective = d.objective;
-  selAud(d.audience, false);
-  buildObjs(d.audience);
-  setTimeout(() => selObj(d.objective), 40);
-}
-
-/* ============================================================
-   TEXTAREA
-============================================================ */
-function onTaInput() {
-  const v = document.getElementById('ta').value.trim();
-  S.abstract = v;
-  const w = v ? v.split(/\s+/).length : 0;
-  document.getElementById('wc').textContent = w + (w===1?' word':' words');
-  document.getElementById('btn-in-next').disabled = w < 5;
-}
-function clearTa() { document.getElementById('ta').value = ''; onTaInput(); }
-
-/* ============================================================
-   AUDIENCE
-============================================================ */
-function selAud(aud, rebuild = true) {
-  document.querySelectorAll('.aud-card').forEach(c => c.classList.remove('sel'));
-  const c = document.getElementById('a-'+aud);
-  if (c) c.classList.add('sel');
-  S.audience = aud;
-  document.getElementById('btn-aud-next').disabled = false;
-  if (rebuild) buildObjs(aud);
-}
-
-/* ============================================================
-   OBJECTIVES
-============================================================ */
-const AUD_LABELS = {
-  policymaker:'policymakers', clinical:'a clinical team', patient:'a patient group', public:'the general public'
-};
-function buildObjs(aud) {
-  const objs = OBJS[aud] || [];
-  const list = document.getElementById('obj-list');
-  list.innerHTML = '';
-  document.getElementById('obj-sub').textContent = `Choose your communication goal for ${AUD_LABELS[aud]||'your audience'}.`;
-  objs.forEach(o => {
-    const d = document.createElement('div');
-    d.className = 'obj-card' + (S.objective === o.id ? ' sel' : '');
-    d.id = 'o-' + o.id;
-    d.onclick = () => selObj(o.id);
-    d.innerHTML = `<div class="obj-icon">${o.icon}</div><div><h4>${o.h}</h4><p>${o.p}</p></div>`;
-    list.appendChild(d);
-  });
-  document.getElementById('btn-obj-next').disabled = !S.objective;
-}
-function selObj(id) {
-  document.querySelectorAll('.obj-card').forEach(c => c.classList.remove('sel'));
-  const c = document.getElementById('o-'+id);
-  if (c) c.classList.add('sel');
-  S.objective = id;
-  document.getElementById('btn-obj-next').disabled = false;
-}
-
-/* ============================================================
-   GENERATE RECOMMENDATIONS
-============================================================ */
-function showRecs() {
-  document.getElementById('loading').classList.add('on');
-  setTimeout(() => {
-    document.getElementById('loading').classList.remove('on');
-    renderRecs();
-    go('recommendations');
-  }, 1200);
-}
-
-function getRecs() {
-  const ar = RECS[S.audience];
-  if (ar && ar[S.objective]) return ar[S.objective];
-  return fallbackRecs();
-}
-
-function fallbackRecs() {
-  return {
-    al: fmt(S.audience), ol: fmt(S.objective),
-    msg:[
-      { l:'Key finding', t:'Identify your single most important finding for this audience and state it in one sentence.' },
-      { l:'Supporting evidence', t:'Select 2–3 specific numbers or outcomes that reinforce your key message.' },
-      { l:'Call to action', t:'End with a clear, specific ask or recommendation.' }
-    ],
-    data:[
-      { n:'?', l:'Your primary\noutcome metric' },
-      { n:'?', l:'Sample size or\npopulation covered' },
-      { n:'?', l:'Effect size or\npractical impact' }
-    ],
-    jargon:[
-      { o:'Statistical significance', p:'reliable finding' },
-      { o:'p < 0.05', p:'→ remove or explain in footnote' },
-      { o:'Confidence interval', p:'→ remove from main text' }
-    ],
-    fmt:[
-      { i:'📄', h:'Keep it to one page', p:'Most non-academic audiences will not read beyond the first page.' },
-      { i:'💡', h:'Lead with impact, not method', p:'Start with what you found, not how you found it.' }
-    ]
-  };
-}
-
-function renderRecs() {
-  const r = getRecs();
-  document.getElementById('rb-aud').textContent = r.al;
-  document.getElementById('rb-obj').textContent = r.ol;
-
-  // Message
-  document.getElementById('rp1-body').innerHTML = r.msg.map(m =>
-    `<div class="msg-item"><div class="msg-lbl">${m.l}</div><div class="msg-txt">${m.t}</div></div>`
-  ).join('');
-
-  // Data
-  document.getElementById('rp2-body').innerHTML =
-    `<p style="font-size:12px;color:var(--muted);margin-bottom:14px;">These are the numbers most likely to resonate with your audience. Lead with them.</p>
-    <div class="data-grid">${r.data.map(d =>
-      `<div class="dc"><div class="dc-num">${d.n}</div><div class="dc-lbl">${d.l.replace(/\n/g,'<br>')}</div></div>`
-    ).join('')}</div>`;
-
-  // Jargon
-  document.getElementById('rp3-body').innerHTML =
-    `<p style="font-size:12px;color:var(--muted);margin-bottom:14px;">Replace or remove technical terms that your audience will not understand.</p>
-    ${r.jargon.map(j =>
-      `<div class="jargon-row"><div class="jo">${j.o}</div><div class="ja">→</div><div class="jp">${j.p}</div></div>`
-    ).join('')}`;
-
-  // Format
-  document.getElementById('rp4-body').innerHTML =
-    `<div class="fmt-list">${r.fmt.map(f =>
-      `<div class="fmt-item"><div class="fmt-ico">${f.i}</div><div><h5>${f.h}</h5><p>${f.p}</p></div></div>`
-    ).join('')}</div>`;
-
-  buildExport(r);
-}
-
-/* ============================================================
-   EXPORT
-============================================================ */
-const EXP_LABELS = { policymaker:'POLICY BRIEF', clinical:'CLINICAL SUMMARY', patient:'PATIENT INFORMATION', public:'RESEARCH SUMMARY' };
-
-function buildExport(r) {
-  document.getElementById('exp-preview').innerHTML = `
-    <div class="brief-lbl">${EXP_LABELS[S.audience]||'RESEARCH SUMMARY'}</div>
-    <div class="brief-h">${r.msg[0].t}</div>
-    <div class="divider"></div>
-    <div class="brief-sec"><h4>Key finding</h4><p>${r.msg[1].t}</p></div>
-    <div class="brief-sec"><h4>Supporting data</h4>
-      <p>${r.data.map(d => `<strong>${d.n}</strong> — ${d.l.replace(/\n/g,' ')}`).join(' · ')}</p>
-    </div>
-    <div class="brief-sec"><h4>Recommendation</h4><p>${r.msg[2].t}</p></div>
-    <div class="brief-sec">
-      <h4>Plain language note</h4>
-      <p style="font-size:12px;color:var(--muted);">Generated by ResearchBridge · Based on abstract provided by researcher · For review before distribution.</p>
-    </div>`;
-}
-
-/* ============================================================
-   PANEL TOGGLE
-============================================================ */
-function toggleRp(id) { document.getElementById(id).classList.toggle('open'); }
-
-/* ============================================================
-   EXPORT ACTIONS (simulated)
-============================================================ */
-function simDl(type) {
-  const b = event.currentTarget;
-  const orig = b.textContent;
-  b.textContent = '✓ Download started';
-  b.disabled = true;
-  setTimeout(() => { b.textContent = orig; b.disabled = false; }, 2200);
-}
-function simCopy() {
-  const b = event.currentTarget;
-  b.textContent = '✓ Copied to clipboard!';
-  setTimeout(() => { b.textContent = '📋 Copy text'; }, 2200);
-}
-function simShare() {
-  const b = event.currentTarget;
-  b.textContent = '✓ Link: researchbridge.app/share/demo-001';
-  setTimeout(() => { b.textContent = '🔗 Share link'; }, 3000);
-}
-
-/* ============================================================
-   RESET
-============================================================ */
-function reset() {
-  S.abstract = ''; S.audience = null; S.objective = null;
-  document.getElementById('ta').value = '';
-  onTaInput();
-  document.querySelectorAll('.aud-card').forEach(c => c.classList.remove('sel'));
-  go('home');
-}
-
-function fmt(s) {
-  if (!s) return '';
-  return s.replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase());
-}
-
-// Init
-go('home');
-</script>
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>
