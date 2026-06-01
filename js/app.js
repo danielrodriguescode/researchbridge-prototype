@@ -59,6 +59,32 @@ function onKeyActivate(e, fn) {
 /* ============================================================
    EXAMPLE RESEARCH SUMMARIES (Step 1)
 ============================================================ */
+// Single source of truth: render BOTH the home "guided examples" grid and
+// the Step-1 selection grid from DEMOS, so they can never drift apart.
+function renderExamples() {
+  const ids = Object.keys(DEMOS);
+  const home = document.getElementById('sc-grid');
+  if (home) home.innerHTML = ids.map((id, i) => {
+    const d = DEMOS[id];
+    return `<div class="sc-card" role="button" tabindex="0" onclick="loadDemo('${id}')" onkeydown="onKeyActivate(event, () => loadDemo('${id}'))">
+      <div class="sc-num">Example ${i + 1}</div>
+      <div class="sc-title">${esc(d.title)}</div>
+      <div class="sc-desc">${esc(d.blurb)}</div>
+      <div class="sc-pills">${(d.pills || []).map(p => `<span class="pill">${esc(p)}</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+
+  const step = document.getElementById('ex-grid');
+  if (step) step.innerHTML = ids.map((id, i) => {
+    const d = DEMOS[id];
+    return `<div class="ex-card" id="ex-${id}" role="button" tabindex="0" aria-pressed="false" onclick="pickExample('${id}')" onkeydown="onKeyActivate(event, () => pickExample('${id}'))">
+      <div class="ex-tag">Example ${i + 1}</div>
+      <h4>${esc(d.title)}</h4>
+      <p>${esc(d.blurb)}</p>
+    </div>`;
+  }).join('');
+}
+
 // Guided example: pre-fills the summary AND the audience/objective, then opens Step 1.
 function loadDemo(id) {
   const d = DEMOS[id];
@@ -481,5 +507,6 @@ function fmt(s) {
    INIT
 ============================================================ */
 loadState();
+renderExamples();
 if (S.example && DEMOS[S.example]) { reflectExample(S.example); }
 go('home');

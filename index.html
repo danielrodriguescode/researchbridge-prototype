@@ -82,21 +82,8 @@
       <div class="home-sc-inner">
         <div class="sc-tag">Guided examples</div>
         <h2 class="sc-h2">See ResearchBridge in action</h2>
-        <p class="sc-sub">Two common research-communication challenges. Click to load a worked example end to end.</p>
-        <div class="sc-grid">
-          <div class="sc-card" role="button" tabindex="0" onclick="loadDemo('s1')" onkeydown="onKeyActivate(event, () => loadDemo('s1'))">
-            <div class="sc-num">Scenario 1</div>
-            <div class="sc-title">Policy brief for the DGS</div>
-            <div class="sc-desc">Sofia has 48 hours to turn her colorectal cancer screening research into a one-page brief for a policy decision-maker. She has never written a policy brief.</div>
-            <div class="sc-pills"><span class="pill">Policymaker</span><span class="pill">Motivate a decision</span></div>
-          </div>
-          <div class="sc-card" role="button" tabindex="0" onclick="loadDemo('s2')" onkeydown="onKeyActivate(event, () => loadDemo('s2'))">
-            <div class="sc-num">Scenario 2</div>
-            <div class="sc-title">Clinical presentation — Cardiology</div>
-            <div class="sc-desc">Sofia presents her cardiac risk model to cardiologists who are not data scientists. Half her charts will not make sense to them.</div>
-            <div class="sc-pills"><span class="pill">Clinical Team</span><span class="pill">Introduce a new tool</span></div>
-          </div>
-        </div>
+        <p class="sc-sub">Start from one of the example studies and follow it end to end — audience and goal are pre-selected for you.</p>
+        <div class="sc-grid" id="sc-grid"></div>
       </div>
     </div>
   </div>
@@ -107,18 +94,7 @@
       <div class="step-lbl">Step 1 of 4 — Research summary</div>
       <h2 class="step-h2">Choose a research summary</h2>
       <p class="step-sub">Select one of the example studies to work with. In the next steps you decide who it is for and what you want to achieve.</p>
-      <div class="ex-grid">
-        <div class="ex-card" id="ex-s1" role="button" tabindex="0" aria-pressed="false" onclick="pickExample('s1')" onkeydown="onKeyActivate(event, () => pickExample('s1'))">
-          <div class="ex-tag">Example 1</div>
-          <h4>Colorectal cancer risk model</h4>
-          <p>An AI model that predicts 10-year colorectal cancer risk from routine health records across Portuguese hospitals.</p>
-        </div>
-        <div class="ex-card" id="ex-s2" role="button" tabindex="0" aria-pressed="false" onclick="pickExample('s2')" onkeydown="onKeyActivate(event, () => pickExample('s2'))">
-          <div class="ex-tag">Example 2</div>
-          <h4>Cardiac event early-warning model</h4>
-          <p>A real-time model that predicts in-hospital cardiac events four hours in advance in a coronary care unit.</p>
-        </div>
-      </div>
+      <div class="ex-grid" id="ex-grid"></div>
       <div class="ex-preview" id="ex-preview" style="display:none;">
         <div class="ex-preview-lbl">Selected research summary</div>
         <p id="ex-abstract"></p>
